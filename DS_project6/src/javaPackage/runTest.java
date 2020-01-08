@@ -555,10 +555,9 @@ public class runTest extends HttpServlet {
 					}
 					
 					for(String each:firstLayerLinks) {
-//							String name="Child"+i;
-						if(each.indexOf("http")==1) {
-							tree.root.addChild(new WebNode(new WebPage(each,each)));
-						}
+						System.out.println(each);
+						tree.root.addChild(new WebNode(new WebPage(each,each)));
+						
 //							i++;
 					}
 					
