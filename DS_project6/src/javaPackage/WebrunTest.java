@@ -60,8 +60,8 @@ import javax.swing.JFrame;
 /**
  * Servlet implementation class runTest
  */
-@WebServlet("/runTest")
-public class runTest extends HttpServlet {
+@WebServlet("/WebrunTest")
+public class WebrunTest extends HttpServlet {
 	
 	private static final long serialVersionUID = 1L;
 	private String[] sitekeywords = {"pixiv","twitter.com","instagram"};
@@ -130,7 +130,7 @@ public class runTest extends HttpServlet {
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public runTest() {
+    public WebrunTest() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -164,13 +164,14 @@ public class runTest extends HttpServlet {
 		GoogleSearchJava searchImage=new GoogleSearchJava();
 		urlToFile urlToFile=new urlToFile("", base);
 		HashMap<String,String> topWebsitesLinksList=new HashMap<String, String>();
+		finalResultMap=new TreeMap<Integer, List<String>>();
 		
-	
 		
 		double i=0;
 		
 			try {
 				searchImage.imageSearch(base+imageA);
+				
 			System.out.println(searchImage.getRelatedKeyword());
 			firstPageUrl=searchImage.getSearchedUrl();
 			pixivParse pixivParse=new pixivParse();
@@ -217,17 +218,50 @@ public class runTest extends HttpServlet {
 				
 			
 			resultSitesList=getResultSitesList();
+			String originalTweetTop="";
+			String originalTweetTextString="";
+			String postTextString="";
 			String originalTweet="";
 			for(ResultSites each:resultSitesList) {
-				if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+				if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
 					if(each.getSiteLink().indexOf("status")!=-1) {
-						try{
-							originalTweet=pixivParse.twitterParsing(each.getSiteLink());
-							System.out.println(originalTweet);
-							break;
+						int favCount=0;
+						try {
+							Document tweetDoc=Jsoup.connect(each.getSiteLink()).get();
+							favCount=Integer.valueOf(tweetDoc.select("span.ProfileTweet-action--favorite > span.ProfileTweet-actionCount")
+				                    .attr("data-tweet-stat-count"));
+							originalTweetTextString=tweetDoc.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
 						}catch (Exception e) {
 							// TODO: handle exception
 							System.out.println(e);
+						}
+						System.out.println(favCount);
+						if(favCount>50) {
+							System.out.println("favcountover50");
+							if(originalTweetTextString.indexOf("pic")!=-1) {
+								
+								try{
+									
+									originalTweet=each.getSiteLink();
+									System.out.println(originalTweet);
+									break;
+								}catch (Exception e) {
+									// TODO: handle exception
+									System.out.println(e);
+								}
+							}else {
+								try{
+									originalTweetTop=pixivParse.twitterParsing(each.getSiteLink());
+									originalTweet=originalTweetTop;
+									System.out.println("comment found , return top tweet link");
+									System.out.println(originalTweet);
+									break;
+								}catch (Exception e) {
+									// TODO: handle exception
+									System.out.println(e);
+								}
+								
+							}
 						}
 					}
 				}
@@ -235,12 +269,18 @@ public class runTest extends HttpServlet {
 			}
 			if(originalTweet.equals("")!=false) {
 				for(ResultSites each:resultSitesList)  {
-					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
 						if(each.getSiteLink().indexOf("status")==-1 && each.getSiteLink().indexOf("hashtag")==-1) {
 								try{
 									originalTweet=pixivParse.startBrowserTwitter(each.getSiteLink(), each.getImgUrl());
 									System.out.println(originalTweet);
-									break;
+									Document tweetDoc=Jsoup.connect(originalTweet).get();
+									originalTweetTextString=tweetDoc.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
+									if(originalTweet.indexOf("status")==-1) {
+										continue;
+									}else {
+										break;
+									}
 								}catch (Exception e) {
 									// TODO: handle exception
 									System.out.println(e);
@@ -291,15 +331,45 @@ public class runTest extends HttpServlet {
 				
 				resultSitesList=getResultSitesList();
 				for(ResultSites each:resultSitesList) {
-					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
 						if(each.getSiteLink().indexOf("status")!=-1) {
-							try{
-								originalTweet=pixivParse.twitterParsing(each.getSiteLink());
-								System.out.println(originalTweet);
-								break;
+							int favCount=0;
+							try {
+								Document tweetDoc=Jsoup.connect(each.getSiteLink()).get();
+								favCount=Integer.valueOf(tweetDoc.select("span.ProfileTweet-action--favorite > span.ProfileTweet-actionCount")
+					                    .attr("data-tweet-stat-count"));
+								originalTweetTextString=tweetDoc.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
+								
 							}catch (Exception e) {
 								// TODO: handle exception
 								System.out.println(e);
+							}
+							System.out.println(favCount);
+							if(favCount>50) {
+								System.out.println("favcountover50");
+								if(originalTweetTextString.indexOf("pic")!=-1) {
+									try{
+										
+										originalTweet=each.getSiteLink();
+										System.out.println(originalTweet);
+										break;
+									}catch (Exception e) {
+										// TODO: handle exception
+										System.out.println(e);
+									}
+								}else {
+									try{
+										originalTweetTop=pixivParse.twitterParsing(each.getSiteLink());
+										originalTweet=originalTweetTop;
+										System.out.println("comment found , return top tweet link");
+										System.out.println(originalTweet);
+										break;
+									}catch (Exception e) {
+										// TODO: handle exception
+										System.out.println(e);
+									}
+									
+								}
 							}
 						}
 					}
@@ -307,11 +377,13 @@ public class runTest extends HttpServlet {
 				}
 				if(originalTweet.equals("")!=false) {
 					for(ResultSites each:resultSitesList)  {
-						if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+						if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
 							if(each.getSiteLink().indexOf("status")==-1 && each.getSiteLink().indexOf("hashtag")==-1) {
 									try{
 										originalTweet=pixivParse.startBrowserTwitter(each.getSiteLink(), each.getImgUrl());
 										System.out.println(originalTweet);
+										Document tweetDoc=Jsoup.connect(originalTweet).get();
+										originalTweetTextString=tweetDoc.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
 										if(originalTweet.indexOf("status")==-1) {
 											continue;
 										}else {
@@ -359,7 +431,7 @@ public class runTest extends HttpServlet {
 				}catch (Exception e) {
 					// TODO: handle exception
 					System.out.println(mainTwitterLink);
-					document=Jsoup.connect(mainTwitterLink).get();
+					document2=Jsoup.connect(mainTwitterLink).get();
 					System.out.println(e);
 				}
 			}
@@ -371,12 +443,34 @@ public class runTest extends HttpServlet {
 			
 			
 			System.out.println(twitterTitle);
-			String postTextString="";
+			
+			
+//			boolean success=false;
+//			while (!success) {
+//				try{
+//					postTextString=document.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
+//					//.select("p.js-tweet-text.tweet-text").first().text()
+//					if(postTextString.indexOf("pic")!=-1) {
+//						
+//						postTextString=postTextString.substring(0, postTextString.indexOf("pic"));
+//					}
+//					success=true;
+//				}catch (Exception e) {
+//					// TODO: handle exception
+//					System.out.println(originalTweetTop);
+//					document=Jsoup.connect(originalTweetTop).get();
+//					System.out.println(e);
+//				}
+//			}
 			boolean success=false;
 			while (!success) {
 				try{
-					postTextString=document.select("p.js-tweet-text.tweet-text").first().text();
-					postTextString=postTextString.substring(0, postTextString.indexOf("pic"));
+					originalTweetTextString=document.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
+					//.select("p.js-tweet-text.tweet-text").first().text()
+					if(originalTweetTextString.indexOf("pic")!=-1) {
+						
+						originalTweetTextString=originalTweetTextString.substring(0, originalTweetTextString.indexOf("pic"));
+					}
 					success=true;
 				}catch (Exception e) {
 					// TODO: handle exception
@@ -386,7 +480,27 @@ public class runTest extends HttpServlet {
 				}
 			}
 			
-			System.out.println(postTextString);
+			
+			
+			
+//			if(originalTweetTextString.indexOf("pic")!=-1) {
+//					originalTweetTextString=originalTweetTextString.substring(0, originalTweetTextString.indexOf("pic"));
+//			}else {
+//				try {
+//					originalTweetTextString=document.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
+//					if(originalTweetTextString.indexOf("pic")!=-1) {
+//						originalTweetTextString=originalTweetTextString.substring(0, originalTweetTextString.indexOf("pic"));
+//					}
+//				}catch (Exception e) {
+//					// TODO: handle exception
+//					System.out.println(e);
+//				}
+//			}
+					
+				
+			
+//			System.out.println(postTextString);
+			System.out.println(originalTweetTextString);
 			topWebsitesLinksList.put(twitterTitle, mainTwitterLink);
 			topWebsitesLinksList.put(tweetTitle, originalTweet);
 			
@@ -441,8 +555,8 @@ public class runTest extends HttpServlet {
 					System.out.println(e);
 				}
 			}
-			System.out.println(twitterTitle+"+"+postTextString);
-			GoogleQuery googleQuery=new GoogleQuery(twitterTitle+"+"+postTextString);
+			System.out.println(twitterTitle+"+"+originalTweetTextString);// or postTextString
+			GoogleQuery googleQuery=new GoogleQuery(twitterTitle+"+"+originalTweetTextString);// or postTextString
 			query = googleQuery.query();
 			twitterTitle.replaceAll("[^\\x20-\\x7e]", "");
 			if(twitterTitle.indexOf(" /")!=-1) {
@@ -459,8 +573,8 @@ public class runTest extends HttpServlet {
 			
 			System.out.println();
 			System.out.println();
-			System.out.println(twitterTitle+"+"+postTextString);
-			GoogleQuery googleQuery2=new GoogleQuery(twitterTitle+"+"+postTextString);
+			System.out.println(twitterTitle+"+"+originalTweetTextString);//or postTextString
+			GoogleQuery googleQuery2=new GoogleQuery(twitterTitle+"+"+originalTweetTextString);//or postTextString
 			query.putAll(googleQuery2.query());
 			System.out.println();
 			System.out.println();
@@ -590,7 +704,7 @@ public class runTest extends HttpServlet {
 			
 			System.out.println();
 			System.out.println();
-			finalResultMap=new TreeMap<Integer, List<String>>();
+			
 			System.out.println("top:");
 			//print out searched result
 			int keyInt=5;
@@ -657,10 +771,26 @@ public class runTest extends HttpServlet {
 			
 			}catch (Exception e) {
 				// TODO: handle exception
-				JLabel lblNewLabel2 = new JLabel("                Failed...");
-				
 				System.out.println(e);
+				System.out.println("Yeessss");
+				
+				siteTitleList=searchImage.getSiteTitleList();
+				int j=0;
+				for(ImageSite each:searchImage.getAllSites()) {
+					List<String> stringList=new ArrayList<String>();
+					stringList.add(siteTitleList.get(j));
+					stringList.add(each.getSiteLink());
+					finalResultMap.put(j,stringList);
+					j++;
+					if(j>=10) {
+						break;
+					}
+				}
 			}
+			
+			
+		
+		
 	
 //		request.getSession().setAttribute("query" , query);
 //		request.getSession().setAttribute("scoreList" , scoreList);

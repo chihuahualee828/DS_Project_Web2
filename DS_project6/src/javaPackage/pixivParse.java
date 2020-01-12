@@ -152,6 +152,8 @@ public class pixivParse {
 						if(("https://twitter.com"+each.attr("href")).equals(siteLink)==false) {
 							links.add("https://twitter.com"+each.attr("href"));
 //							System.out.println("https://twitter.com"+each.attr("href"));
+						}else {
+							links.add(siteLink);
 						}
 					}
 				}

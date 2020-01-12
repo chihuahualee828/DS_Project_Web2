@@ -65,30 +65,34 @@ body{
 }
 
 .top-left{ 
-	position: absolute;
+	
+	position:absolute;
   	top: 8px;
   	left: 8px;
 }
 .top-right {
-  position: absolute;
+  
+	position:absolute;
   top: 8px;
   right: 8px;
 }
 .down-left{ 
-	position: absolute;
+	position:absolute;
   	bottom: 8px;
   	left: 8px;
+  	
 }
 .down-right{ 
-	position: absolute;
+  position:absolute;
   bottom: 8px;
   right: 8px;
 }
-
+.inner: { position: relative; height: auto; }
+.full-height: { height: 100%; }
 
 </style>
 </head>
-	<body bgcolor="#00CCFF">
+	<body bgcolor="#00CCFF" >
 		<div class="title-box">
 		<font size="20" face="微軟正黑體" color="rgb(120,120,120)">油圖搜索器
 		</font>
@@ -140,13 +144,17 @@ body{
 		
 		</script>
 		<div class="top-right">
+		
 		<img src="https://media1.tenor.com/images/1d63993e46f6715bcd9cc3d8c032bd4c/tenor.gif?itemid=15562709" width="130" height="130"/>
 		</div>
+		
 		<div class="top-left">
 		<img src="https://truth.bahamut.com.tw/s01/201612/becee5486be85600cfdddde31b6d3b7b.GIF" width="130" height="130"/>
 		</div>
 		<div class="down-right">
+		
 		<img src="https://i.imgur.com/cWHeWzj.gif" width="130" height="130"/>
+		
 		</div>
 		<div class="down-left">
 		<img src="https://media1.tenor.com/images/e65569919a3f3afb15b062ee16cedf98/tenor.gif?itemid=7499037" width="130" height="130"/>
