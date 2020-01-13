@@ -85,6 +85,8 @@ public class WebrunTest extends HttpServlet {
 			public int compare(Score o1,Score o2) {
 				if(o1.score<o2.score) {
 					return 1;
+				}else if(o1.score==o2.score){
+					return 0;
 				}else {
 					return -1;
 				}
@@ -120,9 +122,12 @@ public class WebrunTest extends HttpServlet {
 			public int compare(ResultSites o1,ResultSites o2) {
 				if(o1.getSimilarity()<o2.getSimilarity()) {
 					return 1;
+				}else if(o1.getSimilarity()==o2.getSimilarity()){
+					return 0;
 				}else {
 					return -1;
 				}
+				
 			}
 			
 		});
@@ -223,8 +228,8 @@ public class WebrunTest extends HttpServlet {
 			String postTextString="";
 			String originalTweet="";
 			for(ResultSites each:resultSitesList) {
-				if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
-					if(each.getSiteLink().indexOf("status")!=-1) {
+				if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+					if(each.getSiteLink().indexOf("status")!=-1 && each.getSimilarity()>50) {
 						int favCount=0;
 						try {
 							Document tweetDoc=Jsoup.connect(each.getSiteLink()).get();
@@ -234,6 +239,7 @@ public class WebrunTest extends HttpServlet {
 						}catch (Exception e) {
 							// TODO: handle exception
 							System.out.println(e);
+							System.out.println("00error");
 						}
 						System.out.println(favCount);
 						if(favCount>50) {
@@ -248,6 +254,7 @@ public class WebrunTest extends HttpServlet {
 								}catch (Exception e) {
 									// TODO: handle exception
 									System.out.println(e);
+									System.out.println("11error");
 								}
 							}else {
 								try{
@@ -259,6 +266,7 @@ public class WebrunTest extends HttpServlet {
 								}catch (Exception e) {
 									// TODO: handle exception
 									System.out.println(e);
+									System.out.println("22error");
 								}
 								
 							}
@@ -269,7 +277,7 @@ public class WebrunTest extends HttpServlet {
 			}
 			if(originalTweet.equals("")!=false) {
 				for(ResultSites each:resultSitesList)  {
-					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
+					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
 						if(each.getSiteLink().indexOf("status")==-1 && each.getSiteLink().indexOf("hashtag")==-1) {
 								try{
 									originalTweet=pixivParse.startBrowserTwitter(each.getSiteLink(), each.getImgUrl());
@@ -284,6 +292,7 @@ public class WebrunTest extends HttpServlet {
 								}catch (Exception e) {
 									// TODO: handle exception
 									System.out.println(e);
+									System.out.println("33error");
 								}
 							
 						}
@@ -331,8 +340,8 @@ public class WebrunTest extends HttpServlet {
 				
 				resultSitesList=getResultSitesList();
 				for(ResultSites each:resultSitesList) {
-					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
-						if(each.getSiteLink().indexOf("status")!=-1) {
+					if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
+						if(each.getSiteLink().indexOf("status")!=-1 && each.getSimilarity()>50) {
 							int favCount=0;
 							try {
 								Document tweetDoc=Jsoup.connect(each.getSiteLink()).get();
@@ -343,6 +352,7 @@ public class WebrunTest extends HttpServlet {
 							}catch (Exception e) {
 								// TODO: handle exception
 								System.out.println(e);
+								System.out.println("44error");
 							}
 							System.out.println(favCount);
 							if(favCount>50) {
@@ -356,6 +366,7 @@ public class WebrunTest extends HttpServlet {
 									}catch (Exception e) {
 										// TODO: handle exception
 										System.out.println(e);
+										System.out.println("55error");
 									}
 								}else {
 									try{
@@ -367,6 +378,7 @@ public class WebrunTest extends HttpServlet {
 									}catch (Exception e) {
 										// TODO: handle exception
 										System.out.println(e);
+										System.out.println("66error");
 									}
 									
 								}
@@ -377,7 +389,7 @@ public class WebrunTest extends HttpServlet {
 				}
 				if(originalTweet.equals("")!=false) {
 					for(ResultSites each:resultSitesList)  {
-						if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1 && each.getSimilarity()>50) {
+						if(each.getImgUrl().indexOf("twimg")!=-1 && each.getSiteLink().indexOf("twitter")!=-1) {
 							if(each.getSiteLink().indexOf("status")==-1 && each.getSiteLink().indexOf("hashtag")==-1) {
 									try{
 										originalTweet=pixivParse.startBrowserTwitter(each.getSiteLink(), each.getImgUrl());
@@ -392,6 +404,7 @@ public class WebrunTest extends HttpServlet {
 									}catch (Exception e) {
 										// TODO: handle exception
 										System.out.println(e);
+										System.out.println("77error");
 									}
 								
 							}
@@ -403,6 +416,7 @@ public class WebrunTest extends HttpServlet {
 			
 			
 			Thread.sleep(1000);
+			
 			
 			String mainTwitterLink=originalTweet.substring(0,originalTweet.indexOf("/status"));
 			System.out.println(mainTwitterLink);
@@ -423,6 +437,7 @@ public class WebrunTest extends HttpServlet {
 			String twitterTitle="";
 			
 			
+			
 			boolean success1=false;
 			while (!success1) {
 				try{
@@ -436,13 +451,7 @@ public class WebrunTest extends HttpServlet {
 				}
 			}
 			
-			
-			
-			
-			
-			
-			
-			System.out.println(twitterTitle);
+			System.out.println("twitterTitle: "+twitterTitle);
 			
 			
 //			boolean success=false;
@@ -467,11 +476,14 @@ public class WebrunTest extends HttpServlet {
 				try{
 					originalTweetTextString=document.select("p.TweetTextSize.TweetTextSize--jumbo.js-tweet-text.tweet-text").text();
 					//.select("p.js-tweet-text.tweet-text").first().text()
+					
 					if(originalTweetTextString.indexOf("pic")!=-1) {
 						
 						originalTweetTextString=originalTweetTextString.substring(0, originalTweetTextString.indexOf("pic"));
 					}
-					success=true;
+					if(originalTweetTextString.length()>0) {
+						success=true;
+					}
 				}catch (Exception e) {
 					// TODO: handle exception
 					System.out.println(originalTweet);
@@ -772,7 +784,7 @@ public class WebrunTest extends HttpServlet {
 			}catch (Exception e) {
 				// TODO: handle exception
 				System.out.println(e);
-				System.out.println("Yeessss");
+				
 				
 				siteTitleList=searchImage.getSiteTitleList();
 				int j=0;
